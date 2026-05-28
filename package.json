@@ -1,0 +1,17 @@
+{
+  "name": "flappy-bird-another-version",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:all": "npm run build",
+    "preview": "vite preview"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "latest",
+    "vite": "latest"
+  }
+}
