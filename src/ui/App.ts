@@ -118,7 +118,7 @@ export class App {
 
                   <h3>Ready to fly</h3>
 
-                  <p>Press Space or Start to begin. Tap the game to pause.</p>
+                  <p>Press Space or tap to start.</p>
 
                 </div>
 
@@ -130,7 +130,7 @@ export class App {
 
                   <h3>Paused</h3>
 
-                  <p>Press P or Space to resume. Tap the game too.</p>
+                  <p>Press Space or tap to resume. Use Pause or P to stay paused.</p>
 
                 </div>
 
@@ -188,7 +188,7 @@ export class App {
 
           </div>
 
-          <p class="hint">Space = flap (or resume when paused). P = pause or resume. Click game = pause or resume.</p>
+          <p class="hint">Space or tap game = flap / start / resume. Pause button or P = pause only.</p>
 
         </section>
 
@@ -334,40 +334,12 @@ export class App {
 
 
 
-    const restartFromOverlay = () => this.game?.restart();
+    const handlePrimaryInput = () => this.handlePrimaryInput();
 
-
-
-    canvas.addEventListener('pointerdown', () => {
-      const game = this.game;
-
-      if (!game) {
-        return;
-      }
-
-      const status = game.getSnapshot().status;
-
-      if (status === 'running') {
-        game.pause();
-        return;
-      }
-
-      if (status === 'paused') {
-        game.resume();
-        return;
-      }
-
-      if (status === 'ready') {
-        game.flap();
-        return;
-      }
-
-      if (status === 'game-over') {
-        restartFromOverlay();
-      }
+    canvas.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      handlePrimaryInput();
     });
-
-
 
     window.addEventListener('keydown', (event) => {
       const game = this.game;
@@ -376,9 +348,8 @@ export class App {
         return;
       }
 
-      const status = game.getSnapshot().status;
-
       if (event.code === 'KeyP') {
+        event.preventDefault();
         game.togglePause();
         return;
       }
@@ -388,30 +359,7 @@ export class App {
       }
 
       event.preventDefault();
-
-      if (status === 'paused') {
-        game.resume();
-        return;
-      }
-
-      if (status === 'running') {
-        if (game.getMode() === 'manual') {
-          game.flap();
-        } else {
-          restartFromOverlay();
-        }
-
-        return;
-      }
-
-      if (status === 'ready') {
-        game.flap();
-        return;
-      }
-
-      if (status === 'game-over') {
-        restartFromOverlay();
-      }
+      this.handlePrimaryInput();
     });
 
 
@@ -434,7 +382,7 @@ export class App {
 
     this.getElement<HTMLButtonElement>('overlayRestartButton').addEventListener('click', () => {
 
-      restartFromOverlay();
+      this.handlePrimaryInput();
 
     });
 
@@ -669,6 +617,39 @@ export class App {
   }
 
 
+
+  private handlePrimaryInput(): void {
+    const game = this.game;
+
+    if (!game) {
+      return;
+    }
+
+    const status = game.getSnapshot().status;
+
+    if (status === 'game-over') {
+      game.restart();
+      return;
+    }
+
+    if (status === 'paused') {
+      game.resume();
+      return;
+    }
+
+    if (status === 'ready') {
+      game.flap();
+      return;
+    }
+
+    if (status === 'running') {
+      if (game.getMode() === 'manual') {
+        game.flap();
+      } else {
+        game.restart();
+      }
+    }
+  }
 
   private updatePageTitle(): void {
     const title = this.selectedTheme.name;

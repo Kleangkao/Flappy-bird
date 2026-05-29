@@ -184,6 +184,8 @@ input {
 .game-stage {
   display: flex;
   justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .game-bezel {
@@ -261,6 +263,10 @@ input {
   background: rgba(16, 32, 51, 0.52);
   backdrop-filter: blur(3px);
   z-index: 3;
+  pointer-events: none;
+}
+
+.screen-overlay button {
   pointer-events: auto;
 }
 
@@ -490,6 +496,7 @@ input {
   .controls button,
   .button-row button {
     width: 100%;
+    min-height: 44px;
   }
 }
 
